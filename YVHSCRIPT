@@ -54,6 +54,7 @@ MainFrame.Size = UDim2.new(0, 220, 0, 440)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.ClipsDescendants = true
+MainFrame.Draggable = true
 
 UICorner.CornerRadius = UDim.new(0, 12)
 UICorner.Parent = MainFrame
@@ -120,6 +121,8 @@ SpectateFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 SpectateFrame.Position = UDim2.new(0.5, -125, 0.85, 0)
 SpectateFrame.Size = UDim2.new(0, 250, 0, 80)
 SpectateFrame.Visible = false
+SpectateFrame.Active = true
+SpectateFrame.Draggable = true
 
 SpectateCorner.CornerRadius = UDim.new(0, 10)
 SpectateCorner.Parent = SpectateFrame
@@ -142,7 +145,8 @@ SpecPrev.Size = UDim2.new(0, 30, 0, 35)
 SpecPrev.Font = Enum.Font.GothamBold
 SpecPrev.Text = "<"
 SpecPrev.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpecPrev.TextSize = 20
+SpecPrev.TextSize = 30
+
 Instance.new("UICorner", SpecPrev).CornerRadius = UDim.new(0, 6)
 
 SpecNext.Name = "Next"
@@ -224,34 +228,6 @@ end
 end
 end)
 
-local dragging, dragInput, dragStart, startPos
-
-local function update(input)
-local delta = input.Position - dragStart
-MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
-
-MainFrame.InputBegan:Connect(function(input)
-if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-dragging = true
-dragStart = input.Position
-startPos = MainFrame.Position
-input.Changed:Connect(function()
-if input.UserInputState == Enum.UserInputState.End then dragging = false end
-end)
-end
-end)
-
-MainFrame.InputChanged:Connect(function(input)
-if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-dragInput = input
-end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-if input == dragInput and dragging then update(input) end
-end)
-
 local minimized = false
 local originalSize = MainFrame.Size
 
@@ -326,10 +302,6 @@ KillAllButton.Text = "Killing Players..."
 KillAllButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
 task.spawn(function()
 while killAllActive do
-local originalPos = nil
-if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-originalPos = LocalPlayer.Character.HumanoidRootPart.CFrame
-end
 local potentialTargets = Players:GetPlayers()
 for _, plr in pairs(potentialTargets) do
 if not killAllActive then break end
@@ -455,19 +427,45 @@ task.spawn(function()
 	while true do
 		task.wait(1)
 		if espEnabled then
+			local localPos = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character.HumanoidRootPart.Position or Vector3.new(0,0,0)
+			local playerData = {}
+			local maxDist = -1
+			local farthestPlr = nil
+
 			for _, plr in pairs(Players:GetPlayers()) do
-				if plr ~= LocalPlayer and plr.Character then
-					updateESP(plr.Character, Color3.fromRGB(255, 255, 0))
-				end
-			end
-			for _, v in pairs(workspace:GetDescendants()) do
-				if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and not Players:GetPlayerFromCharacter(v) then
-					if v.Name == "Homer" then
-						updateESP(v, Color3.fromRGB(255, 0, 0))
-					elseif v.Name == "Bart" then
-						updateESP(v, Color3.fromRGB(255, 255, 0))
+				if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+					local root = plr.Character.HumanoidRootPart
+					local pos = root.Position
+					local dist = (pos - localPos).Magnitude
+					table.insert(playerData, {plr = plr, pos = pos, dist = dist, character = plr.Character})
+					if dist > maxDist then
+						maxDist = dist
+						farthestPlr = plr
 					end
 				end
+			end
+
+			local homers = {}
+
+			if farthestPlr then
+				homers[farthestPlr.Character] = true
+			end
+
+			for _, data in ipairs(playerData) do
+				local nearbyCount = 0
+				for _, other in ipairs(playerData) do
+					if data.plr ~= other.plr and (data.pos - other.pos).Magnitude <= 30 then
+						nearbyCount += 1
+					end
+				end
+				if nearbyCount >= 1 and nearbyCount <= 8 then
+					homers[data.character] = true
+				end
+			end
+
+			for _, data in ipairs(playerData) do
+				local color = homers[data.character] and Color3.fromRGB(255, 0, 0) or Color3.fromRGB(255, 255, 0)
+				updateESP(data.character, color)
 			end
 		end
 	end
@@ -550,7 +548,7 @@ spectatingPlayers = getSpectateTargets()
 if #spectatingPlayers == 0 then
 SpecName.Text = "No Players Found"
 currentSpectateTarget = nil
-Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") or LocalPlayer.Character
 return
 end
 if spectateIndex > #spectatingPlayers then spectateIndex = 1 end
@@ -568,7 +566,7 @@ SpectateFrame.Visible = not SpectateFrame.Visible
 if SpectateFrame.Visible then
 updateSpectate()
 else
-Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") or LocalPlayer.Character
 end
 end)
 
@@ -584,7 +582,7 @@ end)
 
 SpecExit.MouseButton1Click:Connect(function()
 SpectateFrame.Visible = false
-Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") or LocalPlayer.Character
 end)
 
 SpecHighlight.MouseButton1Click:Connect(function()
@@ -643,7 +641,7 @@ if not char then return end
 local root = char:FindFirstChild("HumanoidRootPart")
 local hum = char:FindFirstChild("Humanoid")
 if farming and not ritualActive and root then
-local currentTime =.tick()
+local currentTime = tick()
 local wiggle = math.sin(currentTime * 8) * 6
 root.CFrame = CFrame.new(farmTarget.X + wiggle, farmTarget.Y, farmTarget.Z)
 root.AssemblyLinearVelocity = Vector3.zero
@@ -717,7 +715,7 @@ hum:EquipTool(pizza)
 end
 end
 end
-if platformActive and root then
+if platformActive and/root then
 if not myPlatform or not myPlatform.Parent then
 myPlatform = Instance.new("Part")
 myPlatform.Name = "WalkPlatform"
@@ -754,4 +752,19 @@ task.wait(300)
 VirtualUser:CaptureController()
 VirtualUser:ClickButton2(Vector2.new())
 end
+end)
+
+task.spawn(function()
+	while task.wait(0.5) do
+		if SpectateFrame.Visible then
+			updateSpectate()
+		end
+	end
+end)
+
+LocalPlayer.CharacterAdded:Connect(function()
+	task.wait(2)
+	if SpectateFrame.Visible then
+		updateSpectate()
+	end
 end)
