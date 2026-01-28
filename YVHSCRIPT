@@ -10,7 +10,7 @@ local LocalPlayer = Players.LocalPlayer
 pcall(function()
 	StarterGui:SetCore("SendNotification", {
 		Title = "Notice";
-		Text = "use script with blue box if it doesnt load ur executor is weak";
+		Text = "use script with blue box if it doesnt load ur executor is weak"; --hello creep what you doing you might be checking for skids but this doesnt have also feel free to take scripts here n shi--
 		Duration = 10;
 	})
 end)
