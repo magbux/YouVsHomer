@@ -132,7 +132,7 @@ local AnnoyButton = createButton("Annoy Server", 5)
 local PizzaSpamButton = createButton("Pizza Spam", 6)
 local RitualButton = createButton("Homer Ritual", 7)
 local PlatformButton = createButton("Platform", 8)
-local ESPButton = createButton("ESP (Wallhack)", 9)
+local ESPButton = createButton("ESP (Box)", 9)
 local FullbrightButton = createButton("Fullbright", 10)
 local TPToolButton = createButton("TP Tool", 11)
 local SpawnButton = createButton("TP to Spawn", 12)
@@ -351,11 +351,16 @@ ESPButton.MouseButton1Click:Connect(function()
 		ESPButton.Text = "ESP: ON"
 		ESPButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
 	else
-		ESPButton.Text = "ESP (Wallhack)"
+		ESPButton.Text = "ESP (Box)"
 		ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 		for _, v in pairs(workspace:GetDescendants()) do
-			if v:FindFirstChild("YVH_Highlight") then
-				v.YVH_Highlight:Destroy()
+			if v:FindFirstChild("YVH_ESP_Box") then
+				v.YVH_ESP_Box:Destroy()
+			end
+		end
+		for _, p in pairs(Players:GetPlayers()) do
+			if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character.HumanoidRootPart:FindFirstChild("YVH_ESP_Box") then
+				p.Character.HumanoidRootPart.YVH_ESP_Box:Destroy()
 			end
 		end
 	end
@@ -421,20 +426,41 @@ SpawnButton.MouseButton1Click:Connect(function()
 	end
 end)
 
-local function addHighlight(model, color)
-	if not model:FindFirstChild("YVH_Highlight") then
-		local hl = Instance.new("Highlight")
-		hl.Name = "YVH_Highlight"
-		hl.Adornee = model
-		hl.FillColor = color
-		hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-		hl.FillTransparency = 0.5
-		hl.OutlineTransparency = 0.5
-		hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-		hl.Parent = model
+local function updateESP(model, color)
+	local root = model:FindFirstChild("HumanoidRootPart")
+	if not root then return end
+	
+	if not root:FindFirstChild("YVH_ESP_Box") then
+		local bb = Instance.new("BillboardGui")
+		bb.Name = "YVH_ESP_Box"
+		bb.Adornee = root
+		bb.AlwaysOnTop = true
+		bb.Size = UDim2.new(4.5, 0, 6, 0)
+		bb.StudsOffset = Vector3.new(0, 0.5, 0)
+		bb.Parent = root
+		
+		local frame = Instance.new("Frame")
+		frame.Name = "Box"
+		frame.Parent = bb
+		frame.Size = UDim2.new(1, 0, 1, 0)
+		frame.BackgroundTransparency = 1
+		frame.BorderSizePixel = 0
+		
+		local stroke = Instance.new("UIStroke")
+		stroke.Name = "Stroke"
+		stroke.Parent = frame
+		stroke.Thickness = 1.5
+		stroke.Color = color
+		stroke.Transparency = 0
+		stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	else
-		if model.YVH_Highlight.FillColor ~= color then
-			model.YVH_Highlight.FillColor = color
+		local bb = root.YVH_ESP_Box
+		local frame = bb:FindFirstChild("Box")
+		if frame then
+			local stroke = frame:FindFirstChild("Stroke")
+			if stroke and stroke.Color ~= color then
+				stroke.Color = color
+			end
 		end
 	end
 end
@@ -547,16 +573,16 @@ RunService.RenderStepped:Connect(function()
 		for _, v in pairs(workspace:GetDescendants()) do
 			if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
 				if v.Name == "Homer" then
-					addHighlight(v, Color3.fromRGB(255, 0, 0))
+					updateESP(v, Color3.fromRGB(255, 0, 0))
 				elseif v.Name == "Bart" then
-					addHighlight(v, Color3.fromRGB(255, 255, 0))
+					updateESP(v, Color3.fromRGB(255, 255, 0))
 				end
 			end
 		end
 		
 		for _, plr in pairs(Players:GetPlayers()) do
 			if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Humanoid") then
-				addHighlight(plr.Character, Color3.fromRGB(255, 255, 255))
+				updateESP(plr.Character, Color3.fromRGB(255, 255, 0))
 			end
 		end
 	end
