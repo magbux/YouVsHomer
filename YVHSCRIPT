@@ -6,6 +6,7 @@ local StarterGui = game:GetService("StarterGui")
 local VirtualUser = game:GetService("VirtualUser")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
 
 pcall(function()
 	StarterGui:SetCore("SendNotification", {
@@ -33,6 +34,14 @@ local SearchBar = Instance.new("TextBox")
 local SearchCorner = Instance.new("UICorner")
 local ContentFrame = Instance.new("ScrollingFrame")
 local UIListLayout = Instance.new("UIListLayout")
+
+local SpectateFrame = Instance.new("Frame")
+local SpectateCorner = Instance.new("UICorner")
+local SpecName = Instance.new("TextLabel")
+local SpecPrev = Instance.new("TextButton")
+local SpecNext = Instance.new("TextButton")
+local SpecHighlight = Instance.new("TextButton")
+local SpecExit = Instance.new("TextButton")
 
 ScreenGui.Name = "yvh script"
 ScreenGui.ResetOnSpawn = false
@@ -106,6 +115,70 @@ UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Padding = UDim.new(0, 6)
 UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
+SpectateFrame.Name = "SpectateFrame"
+SpectateFrame.Parent = ScreenGui
+SpectateFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SpectateFrame.Position = UDim2.new(0.5, -125, 0.85, 0)
+SpectateFrame.Size = UDim2.new(0, 250, 0, 80)
+SpectateFrame.Visible = false
+
+SpectateCorner.CornerRadius = UDim.new(0, 10)
+SpectateCorner.Parent = SpectateFrame
+
+SpecName.Name = "SpecName"
+SpecName.Parent = SpectateFrame
+SpecName.BackgroundTransparency = 1
+SpecName.Position = UDim2.new(0, 0, 0, 5)
+SpecName.Size = UDim2.new(1, 0, 0, 25)
+SpecName.Font = Enum.Font.GothamBold
+SpecName.Text = "Player Name"
+SpecName.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpecName.TextSize = 16
+
+SpecPrev.Name = "Prev"
+SpecPrev.Parent = SpectateFrame
+SpecPrev.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SpecPrev.Position = UDim2.new(0, 10, 0, 35)
+SpecPrev.Size = UDim2.new(0, 30, 0, 35)
+SpecPrev.Font = Enum.Font.GothamBold
+SpecPrev.Text = "<"
+SpecPrev.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpecPrev.TextSize = 20
+Instance.new("UICorner", SpecPrev).CornerRadius = UDim.new(0, 6)
+
+SpecNext.Name = "Next"
+SpecNext.Parent = SpectateFrame
+SpecNext.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SpecNext.Position = UDim2.new(1, -40, 0, 35)
+SpecNext.Size = UDim2.new(0, 30, 0, 35)
+SpecNext.Font = Enum.Font.GothamBold
+SpecNext.Text = ">"
+SpecNext.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpecNext.TextSize = 20
+Instance.new("UICorner", SpecNext).CornerRadius = UDim.new(0, 6)
+
+SpecHighlight.Name = "Highlight"
+SpecHighlight.Parent = SpectateFrame
+SpecHighlight.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+SpecHighlight.Position = UDim2.new(0.5, -60, 0, 35)
+SpecHighlight.Size = UDim2.new(0, 120, 0, 35)
+SpecHighlight.Font = Enum.Font.GothamBold
+SpecHighlight.Text = "Highlight (!)"
+SpecHighlight.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpecHighlight.TextSize = 14
+Instance.new("UICorner", SpecHighlight).CornerRadius = UDim.new(0, 6)
+
+SpecExit.Name = "Exit"
+SpecExit.Parent = SpectateFrame
+SpecExit.BackgroundColor3 = Color3.fromRGB(150, 30, 30)
+SpecExit.Position = UDim2.new(1, -25, 0, -10)
+SpecExit.Size = UDim2.new(0, 20, 0, 20)
+SpecExit.Font = Enum.Font.GothamBold
+SpecExit.Text = "X"
+SpecExit.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpecExit.TextSize = 12
+Instance.new("UICorner", SpecExit).CornerRadius = UDim.new(1, 0)
+
 local function createButton(text, order)
 	local btn = Instance.new("TextButton")
 	local corner = Instance.new("UICorner")
@@ -136,6 +209,8 @@ local ESPButton = createButton("ESP (Box)", 9)
 local FullbrightButton = createButton("Fullbright", 10)
 local TPToolButton = createButton("TP Tool", 11)
 local SpawnButton = createButton("TP to Spawn", 12)
+local SpectateMenuButton = createButton("Spectate Menu", 13)
+local FPSBoostButton = createButton("FPS Boost", 14)
 
 SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
 	local text = SearchBar.Text:lower()
@@ -424,6 +499,117 @@ SpawnButton.MouseButton1Click:Connect(function()
 	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
 		LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1.57, 105.00, -22.51)
 	end
+end)
+
+local spectateIndex = 1
+local spectatingPlayers = {}
+local currentSpectateTarget = nil
+
+local function getSpectateTargets()
+	local targets = {}
+	for _, p in pairs(Players:GetPlayers()) do
+		if p ~= LocalPlayer then
+			table.insert(targets, p)
+		end
+	end
+	return targets
+end
+
+local function updateSpectate()
+	spectatingPlayers = getSpectateTargets()
+	if #spectatingPlayers == 0 then
+		SpecName.Text = "No Players Found"
+		currentSpectateTarget = nil
+		Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+		return
+	end
+	
+	if spectateIndex > #spectatingPlayers then spectateIndex = 1 end
+	if spectateIndex < 1 then spectateIndex = #spectatingPlayers end
+	
+	local target = spectatingPlayers[spectateIndex]
+	currentSpectateTarget = target
+	SpecName.Text = target.Name
+	
+	if target.Character and target.Character:FindFirstChild("Humanoid") then
+		Camera.CameraSubject = target.Character.Humanoid
+	end
+end
+
+SpectateMenuButton.MouseButton1Click:Connect(function()
+	SpectateFrame.Visible = not SpectateFrame.Visible
+	if SpectateFrame.Visible then
+		updateSpectate()
+	else
+		Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+	end
+end)
+
+SpecPrev.MouseButton1Click:Connect(function()
+	spectateIndex = spectateIndex - 1
+	updateSpectate()
+end)
+
+SpecNext.MouseButton1Click:Connect(function()
+	spectateIndex = spectateIndex + 1
+	updateSpectate()
+end)
+
+SpecExit.MouseButton1Click:Connect(function()
+	SpectateFrame.Visible = false
+	Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+end)
+
+SpecHighlight.MouseButton1Click:Connect(function()
+	if currentSpectateTarget and currentSpectateTarget.Character and currentSpectateTarget.Character:FindFirstChild("Head") then
+		local head = currentSpectateTarget.Character.Head
+		local existing = head:FindFirstChild("HighlightedMarker")
+		if existing then
+			existing:Destroy()
+		else
+			local bb = Instance.new("BillboardGui")
+			bb.Name = "HighlightedMarker"
+			bb.Adornee = head
+			bb.Size = UDim2.new(0, 100, 0, 100)
+			bb.StudsOffset = Vector3.new(0, 2, 0)
+			bb.AlwaysOnTop = true
+			bb.Parent = head
+			
+			local txt = Instance.new("TextLabel")
+			txt.Parent = bb
+			txt.Size = UDim2.new(1, 0, 1, 0)
+			txt.BackgroundTransparency = 1
+			txt.Text = "!"
+			txt.TextColor3 = Color3.fromRGB(255, 0, 0)
+			txt.TextScaled = true
+			txt.Font = Enum.Font.GothamBold
+			
+			local stroke = Instance.new("UIStroke")
+			stroke.Parent = txt
+			stroke.Thickness = 2
+			stroke.TextStrokeTransparency = 0
+		end
+	end
+end)
+
+FPSBoostButton.MouseButton1Click:Connect(function()
+	local decals = workspace:GetDescendants()
+	for _, v in pairs(decals) do
+		if v:IsA("Decal") or v:IsA("Texture") then
+			v:Destroy()
+		elseif v:IsA("BasePart") then
+			v.Material = Enum.Material.SmoothPlastic
+			v.CastShadow = false
+			v.Reflectance = 0
+		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+			v.Enabled = false
+		end
+	end
+	Lighting.GlobalShadows = false
+	Lighting.FogEnd = 9e9
+	FPSBoostButton.Text = "FPS Boosted!"
+	task.wait(1)
+	FPSBoostButton.Text = "FPS Boost"
 end)
 
 local function updateBoxESP(model, color)
