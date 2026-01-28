@@ -17,8 +17,8 @@ end)
 
 pcall(function()
 	StarterGui:SetCore("SendNotification", {
-		Title = "Anti-AFK";
-		Text = "3 Layers of Anti-AFK Enabled";
+		Title = "Anti Afk";
+		Text = "tbh this will prob kick you if it does find another one";
 		Duration = 5;
 	})
 end)
