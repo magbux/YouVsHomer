@@ -354,13 +354,13 @@ ESPButton.MouseButton1Click:Connect(function()
 		ESPButton.Text = "ESP (Box)"
 		ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 		for _, v in pairs(workspace:GetDescendants()) do
-			if v:FindFirstChild("YVH_ESP_Box") then
-				v.YVH_ESP_Box:Destroy()
+			if v:FindFirstChild("YVH_BoxESP") then
+				v.YVH_BoxESP:Destroy()
 			end
 		end
 		for _, p in pairs(Players:GetPlayers()) do
-			if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character.HumanoidRootPart:FindFirstChild("YVH_ESP_Box") then
-				p.Character.HumanoidRootPart.YVH_ESP_Box:Destroy()
+			if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and p.Character.HumanoidRootPart:FindFirstChild("YVH_BoxESP") then
+				p.Character.HumanoidRootPart.YVH_BoxESP:Destroy()
 			end
 		end
 	end
@@ -426,21 +426,21 @@ SpawnButton.MouseButton1Click:Connect(function()
 	end
 end)
 
-local function updateESP(model, color)
+local function updateBoxESP(model, color)
 	local root = model:FindFirstChild("HumanoidRootPart")
 	if not root then return end
 	
-	if not root:FindFirstChild("YVH_ESP_Box") then
+	if not root:FindFirstChild("YVH_BoxESP") then
 		local bb = Instance.new("BillboardGui")
-		bb.Name = "YVH_ESP_Box"
+		bb.Name = "YVH_BoxESP"
 		bb.Adornee = root
 		bb.AlwaysOnTop = true
-		bb.Size = UDim2.new(4.5, 0, 6, 0)
-		bb.StudsOffset = Vector3.new(0, 0.5, 0)
+		bb.Size = UDim2.new(4, 0, 5.5, 0)
+		bb.StudsOffset = Vector3.new(0, 0, 0)
 		bb.Parent = root
 		
 		local frame = Instance.new("Frame")
-		frame.Name = "Box"
+		frame.Name = "Outline"
 		frame.Parent = bb
 		frame.Size = UDim2.new(1, 0, 1, 0)
 		frame.BackgroundTransparency = 1
@@ -449,13 +449,13 @@ local function updateESP(model, color)
 		local stroke = Instance.new("UIStroke")
 		stroke.Name = "Stroke"
 		stroke.Parent = frame
-		stroke.Thickness = 1.5
+		stroke.Thickness = 2
 		stroke.Color = color
 		stroke.Transparency = 0
 		stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	else
-		local bb = root.YVH_ESP_Box
-		local frame = bb:FindFirstChild("Box")
+		local bb = root.YVH_BoxESP
+		local frame = bb:FindFirstChild("Outline")
 		if frame then
 			local stroke = frame:FindFirstChild("Stroke")
 			if stroke and stroke.Color ~= color then
@@ -464,6 +464,29 @@ local function updateESP(model, color)
 		end
 	end
 end
+
+task.spawn(function()
+	while true do
+		if espEnabled then
+			for _, v in pairs(workspace:GetDescendants()) do
+				if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+					if v.Name == "Homer" then
+						updateBoxESP(v, Color3.fromRGB(255, 0, 0))
+					elseif v.Name == "Bart" then
+						updateBoxESP(v, Color3.fromRGB(255, 255, 0))
+					end
+				end
+			end
+			
+			for _, plr in pairs(Players:GetPlayers()) do
+				if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Humanoid") then
+					updateBoxESP(plr.Character, Color3.fromRGB(255, 255, 0))
+				end
+			end
+		end
+		task.wait(1)
+	end
+end)
 
 RunService.RenderStepped:Connect(function()
 	local char = LocalPlayer.Character
@@ -567,24 +590,6 @@ RunService.RenderStepped:Connect(function()
 	elseif not platformActive and myPlatform then
 		myPlatform:Destroy()
 		myPlatform = nil
-	end
-	
-	if espEnabled then
-		for _, v in pairs(workspace:GetDescendants()) do
-			if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-				if v.Name == "Homer" then
-					updateESP(v, Color3.fromRGB(255, 0, 0))
-				elseif v.Name == "Bart" then
-					updateESP(v, Color3.fromRGB(255, 255, 0))
-				end
-			end
-		end
-		
-		for _, plr in pairs(Players:GetPlayers()) do
-			if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Humanoid") then
-				updateESP(plr.Character, Color3.fromRGB(255, 255, 0))
-			end
-		end
 	end
 end)
 
