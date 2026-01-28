@@ -9,19 +9,19 @@ local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
 pcall(function()
-    StarterGui:SetCore("SendNotification", {
-        Title = "Notice";
-        Text = "use script with blue box if it doesnt load ur executor is weak";
-        Duration = 10;
-    })
+StarterGui:SetCore("SendNotification", {
+Title = "Notice";
+Text = "use script with blue box if it doesnt load ur executor is weak";
+Duration = 10;
+})
 end)
 
 pcall(function()
-    StarterGui:SetCore("SendNotification", {
-        Title = "Anti Afk";
-        Text = "ion think this will work but eh";
-        Duration = 5;
-    })
+StarterGui:SetCore("SendNotification", {
+Title = "Anti Afk";
+Text = "ion think this will work but eh";
+Duration = 5;
+})
 end)
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -180,21 +180,21 @@ SpecExit.TextSize = 12
 Instance.new("UICorner", SpecExit).CornerRadius = UDim.new(1, 0)
 
 local function createButton(text, order)
-    local btn = Instance.new("TextButton")
-    local corner = Instance.new("UICorner")
-    btn.Name = text
-    btn.Parent = ContentFrame
-    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    btn.Size = UDim2.new(0, 200, 0, 35)
-    btn.Font = Enum.Font.GothamBold
-    btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.TextSize = 14.000
-    btn.AutoButtonColor = true
-    btn.LayoutOrder = order
-    corner.CornerRadius = UDim.new(0, 8)
-    corner.Parent = btn
-    return btn
+local btn = Instance.new("TextButton")
+local corner = Instance.new("UICorner")
+btn.Name = text
+btn.Parent = ContentFrame
+btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+btn.Size = UDim2.new(0, 200, 0, 35)
+btn.Font = Enum.Font.GothamBold
+btn.Text = text
+btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+btn.TextSize = 14.000
+btn.AutoButtonColor = true
+btn.LayoutOrder = order
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = btn
+return btn
 end
 
 local FarmButton = createButton("Farm Coins", 1)
@@ -211,92 +211,93 @@ local TPToolButton = createButton("TP Tool", 11)
 local SpawnButton = createButton("TP to Spawn", 12)
 local SpectateMenuButton = createButton("Spectate Menu", 13)
 local FPSBoostButton = createButton("FPS Boost", 14)
+local WallhopButton = createButton("wallhop cred to owner", 15)
 
 SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
-    local text = SearchBar.Text:lower()
-    for _, child in pairs(ContentFrame:GetChildren()) do
-        if child:IsA("GuiObject") then
-            if child.Name:lower():find(text) then
-                child.Visible = true
-            else
-                child.Visible = false
-            end
-        end
-    end
+local text = SearchBar.Text:lower()
+for _, child in pairs(ContentFrame:GetChildren()) do
+if child:IsA("GuiObject") then
+if child.Name:lower():find(text) then
+child.Visible = true
+else
+child.Visible = false
+end
+end
+end
 end)
 
 local dragging, dragInput, dragStart, startPos
 
 local function update(input)
-    local delta = input.Position - dragStart
-    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+local delta = input.Position - dragStart
+MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 end
 
 MainFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = MainFrame.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then dragging = false end
-        end)
-    end
+if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+dragging = true
+dragStart = input.Position
+startPos = MainFrame.Position
+input.Changed:Connect(function()
+if input.UserInputState == Enum.UserInputState.End then dragging = false end
+end)
+end
 end)
 
 MainFrame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
-    end
+if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+dragInput = input
+end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then update(input) end
+if input == dragInput and dragging then update(input) end
 end)
 
 local sDragging, sDragInput, sDragStart, sStartPos
 
 local function updateSpectateDrag(input)
-    local delta = input.Position - sDragStart
-    SpectateFrame.Position = UDim2.new(sStartPos.X.Scale, sStartPos.X.Offset + delta.X, sStartPos.Y.Scale, sStartPos.Y.Offset + delta.Y)
+local delta = input.Position - sDragStart
+SpectateFrame.Position = UDim2.new(sStartPos.X.Scale, sStartPos.X.Offset + delta.X, sStartPos.Y.Scale, sStartPos.Y.Offset + delta.Y)
 end
 
 SpectateFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        sDragging = true
-        sDragStart = input.Position
-        sStartPos = SpectateFrame.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then sDragging = false end
-        end)
-    end
+if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+sDragging = true
+sDragStart = input.Position
+sStartPos = SpectateFrame.Position
+input.Changed:Connect(function()
+if input.UserInputState == Enum.UserInputState.End then sDragging = false end
+end)
+end
 end)
 
 SpectateFrame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        sDragInput = input
-    end
+if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+sDragInput = input
+end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if input == sDragInput and sDragging then updateSpectateDrag(input) end
+if input == sDragInput and sDragging then updateSpectateDrag(input) end
 end)
 
 local minimized = false
 local originalSize = MainFrame.Size
 
 MinimizeButton.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    if minimized then
-        ContentFrame.Visible = false
-        SearchBar.Visible = false
-        MainFrame.Size = UDim2.new(0, 220, 0, 40)
-        MinimizeButton.Text = "+"
-    else
-        ContentFrame.Visible = true
-        SearchBar.Visible = true
-        MainFrame.Size = originalSize
-        MinimizeButton.Text = "-"
-    end
+minimized = not minimized
+if minimized then
+ContentFrame.Visible = false
+SearchBar.Visible = false
+MainFrame.Size = UDim2.new(0, 220, 0, 40)
+MinimizeButton.Text = "+"
+else
+ContentFrame.Visible = true
+SearchBar.Visible = true
+MainFrame.Size = originalSize
+MinimizeButton.Text = "-"
+end
 end)
 
 local farming = false
@@ -319,268 +320,264 @@ local tpToolActive = false
 local tpToolInstance = nil
 
 FarmButton.MouseButton1Click:Connect(function()
-    farming = not farming
-    if farming then
-        FarmButton.Text = "Stop Farm"
-        FarmButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-    else
-        FarmButton.Text = "Farm Coins"
-        FarmButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    end
+farming = not farming
+if farming then
+FarmButton.Text = "Stop Farm"
+FarmButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+else
+FarmButton.Text = "Farm Coins"
+FarmButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+end
 end)
 
 FarmWinsButton.MouseButton1Click:Connect(function()
-    farmWins = not farmWins
-    if farmWins then
-        FarmWinsButton.Text = "Wins: ON"
-        FarmWinsButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-        task.spawn(function()
-            while farmWins do
-                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(winTarget)
-                end
-                task.wait(10)
-            end
-        end)
-    else
-        FarmWinsButton.Text = "Auto Farm Wins"
-        FarmWinsButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    end
+farmWins = not farmWins
+if farmWins then
+FarmWinsButton.Text = "Wins: ON"
+FarmWinsButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+task.spawn(function()
+while farmWins do
+if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(winTarget)
+end
+task.wait(10)
+end
+end)
+else
+FarmWinsButton.Text = "Auto Farm Wins"
+FarmWinsButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+end
 end)
 
 KillAllButton.MouseButton1Click:Connect(function()
-    killAllActive = not killAllActive
-    if killAllActive then
-        KillAllButton.Text = "Killing Players..."
-        KillAllButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
-        task.spawn(function()
-            while killAllActive do
-                local originalPos = nil
-                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    originalPos = LocalPlayer.Character.HumanoidRootPart.CFrame
-                end
-                local potentialTargets = Players:GetPlayers()
-                for _, plr in pairs(potentialTargets) do
-                    if not killAllActive then break end
-                    if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("HumanoidRootPart") then
-                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                            LocalPlayer.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
-                            local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
-                            if tool then
-                                tool.Parent = LocalPlayer.Character
-                                tool:Activate()
-                            end
-                            task.wait(0.15)
-                        end
-                    end
-                end
-                task.wait()
-            end
-        end)
-    else
-        KillAllButton.Text = "Kill All Players"
-        KillAllButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    end
+killAllActive = not killAllActive
+if killAllActive then
+KillAllButton.Text = "Killing Players..."
+KillAllButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+task.spawn(function()
+while killAllActive do
+local originalPos = nil
+if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+originalPos = LocalPlayer.Character.HumanoidRootPart.CFrame
+end
+local potentialTargets = Players:GetPlayers()
+for _, plr in pairs(potentialTargets) do
+if not killAllActive then break end
+if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("HumanoidRootPart") then
+if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+LocalPlayer.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
+local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
+if tool then
+tool.Parent = LocalPlayer.Character
+tool:Activate()
+end
+task.wait(0.15)
+end
+end
+end
+task.wait()
+end
+end)
+else
+KillAllButton.Text = "Kill All Players"
+KillAllButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+end
 end)
 
 LoadBlueBoxButton.MouseButton1Click:Connect(function()
-    local scriptUrl = "https://raw.githubusercontent.com/giobolqvi1/yvh-gui/refs/heads/main/HgCH4NvG62PSy86balVH7D12ZGQZ1D6gfi9n3mYv47R5W4xjny09AX39spW4YTkO.lua.txt"
-    LoadBlueBoxButton.Text = "Loaded!"
-    loadstring(game:HttpGet(scriptUrl))()
-    wait(1)
-    LoadBlueBoxButton.Text = "Load Blue Box Script"
+local scriptUrl = "https://raw.githubusercontent.com/giobolqvi1/yvh-gui/refs/heads/main/HgCH4NvG62PSy86balVH7D12ZGQZ1D6gfi9n3mYv47R5W4xjny09AX39spW4YTkO.lua.txt"
+LoadBlueBoxButton.Text = "Loaded!"
+loadstring(game:HttpGet(scriptUrl))()
+wait(1)
+LoadBlueBoxButton.Text = "Load Blue Box Script"
 end)
 
 AnnoyButton.MouseButton1Click:Connect(function()
-    annoyServer = not annoyServer
-    if annoyServer then
-        AnnoyButton.Text = "Annoying Server..."
-        AnnoyButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-    else
-        AnnoyButton.Text = "Annoy Server"
-        AnnoyButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        if annoyPlatform then
-            annoyPlatform:Destroy()
-            annoyPlatform = nil
-        end
-        currentAnnoyTarget = nil
-    end
+annoyServer = not annoyServer
+if annoyServer then
+AnnoyButton.Text = "Annoying Server..."
+AnnoyButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+else
+AnnoyButton.Text = "Annoy Server"
+AnnoyButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+if annoyPlatform then
+annoyPlatform:Destroy()
+annoyPlatform = nil
+end
+currentAnnoyTarget = nil
+end
 end)
 
 PizzaSpamButton.MouseButton1Click:Connect(function()
-    pizzaSpamActive = not pizzaSpamActive
-    if pizzaSpamActive then
-        PizzaSpamButton.Text = "Spamming Pizza..."
-        PizzaSpamButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-    else
-        PizzaSpamButton.Text = "Pizza Spam"
-        PizzaSpamButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    end
+pizzaSpamActive = not pizzaSpamActive
+if pizzaSpamActive then
+PizzaSpamButton.Text = "Spamming Pizza..."
+PizzaSpamButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+else
+PizzaSpamButton.Text = "Pizza Spam"
+PizzaSpamButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+end
 end)
 
 RitualButton.MouseButton1Click:Connect(function()
-    if ritualActive then return end
-    ritualActive = true
-    ritualStartTime = tick()
-    RitualButton.Text = "ASCENDING..."
-    RitualButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.Anchored = true
-    end
+if ritualActive then return end
+ritualActive = true
+ritualStartTime = tick()
+RitualButton.Text = "ASCENDING..."
+RitualButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+LocalPlayer.Character.HumanoidRootPart.Anchored = true
+end
 end)
 
 PlatformButton.MouseButton1Click:Connect(function()
-    platformActive = not platformActive
-    if platformActive then
-        PlatformButton.Text = "Platform: ON"
-        PlatformButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-    else
-        PlatformButton.Text = "Platform"
-        PlatformButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        if myPlatform then myPlatform:Destroy() myPlatform = nil end
-    end
+platformActive = not platformActive
+if platformActive then
+PlatformButton.Text = "Platform: ON"
+PlatformButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+else
+PlatformButton.Text = "Platform"
+PlatformButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+if myPlatform then myPlatform:Destroy() myPlatform = nil end
+end
 end)
 
 local function checkItems(plr)
-    local hasPizza = false
-    local hasTaco = false
-    if plr.Character then
-        if plr.Character:FindFirstChild("Pizza") then hasPizza = true end
-        if plr.Character:FindFirstChild("Taco") then hasTaco = true end
-    end
-    if plr.Backpack then
-        if plr.Backpack:FindFirstChild("Pizza") then hasPizza = true end
-        if plr.Backpack:FindFirstChild("Taco") then hasTaco = true end
-    end
-    return hasPizza and hasTaco
+local hasPizza = false
+local hasTaco = false
+if plr.Character then
+if plr.Character:FindFirstChild("Pizza") then hasPizza = true end
+if plr.Character:FindFirstChild("Taco") then hasTaco = true end
+end
+if plr.Backpack then
+if plr.Backpack:FindFirstChild("Pizza") then hasPizza = true end
+if plr.Backpack:FindFirstChild("Taco") then hasTaco = true end
+end
+return hasPizza and hasTaco
 end
 
 local function updateESP(model, color)
-    if not model or not model.Parent then return end
-    local head = model:FindFirstChild("Head")
-    if not head then return end
-    
-    local bb = head:FindFirstChild("YVH_BoxESP")
-    if not bb then
-        bb = Instance.new("BillboardGui")
-        bb.Name = "YVH_BoxESP"
-        bb.Adornee = head
-        bb.Size = UDim2.new(4.5, 0, 6, 0)
-        bb.AlwaysOnTop = true
-        bb.Parent = head
-        
-        local frame = Instance.new("Frame")
-        frame.Size = UDim2.new(1, 0, 1, 0)
-        frame.BackgroundTransparency = 1
-        frame.Parent = bb
-        
-        local stroke = Instance.new("UIStroke")
-        stroke.Thickness = 2
-        stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        stroke.Parent = frame
-    end
-    
-    if bb and bb:FindFirstChild("Frame") and bb.Frame:FindFirstChild("UIStroke") then
-        bb.Frame.UIStroke.Color = color
-    end
+if not model or not model.Parent then return end
+local head = model:FindFirstChild("Head")
+if not head then return end
+local bb = head:FindFirstChild("YVH_BoxESP")
+if not bb then
+bb = Instance.new("BillboardGui")
+bb.Name = "YVH_BoxESP"
+bb.Adornee = head
+bb.Size = UDim2.new(4.5, 0, 6, 0)
+bb.AlwaysOnTop = true
+bb.Parent = head
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(1, 0, 1, 0)
+frame.BackgroundTransparency = 1
+frame.Parent = bb
+local stroke = Instance.new("UIStroke")
+stroke.Thickness = 2
+stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+stroke.Parent = frame
+end
+if bb and bb:FindFirstChild("Frame") and bb.Frame:FindFirstChild("UIStroke") then
+bb.Frame.UIStroke.Color = color
+end
 end
 
 local function clearESP()
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr.Character then
-            local head = plr.Character:FindFirstChild("Head")
-            if head and head:FindFirstChild("YVH_BoxESP") then
-                head.YVH_BoxESP:Destroy()
-            end
-        end
-    end
+for _, plr in pairs(Players:GetPlayers()) do
+if plr.Character then
+local head = plr.Character:FindFirstChild("Head")
+if head and head:FindFirstChild("YVH_BoxESP") then
+head.YVH_BoxESP:Destroy()
+end
+end
+end
 end
 
 ESPButton.MouseButton1Click:Connect(function()
-    espEnabled = not espEnabled
-    if espEnabled then
-        ESPButton.Text = "ESP: ON"
-        ESPButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-    else
-        ESPButton.Text = "ESP (Box)"
-        ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        clearESP()
-    end
+espEnabled = not espEnabled
+if espEnabled then
+ESPButton.Text = "ESP: ON"
+ESPButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+else
+ESPButton.Text = "ESP (Box)"
+ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+clearESP()
+end
 end)
 
 task.spawn(function()
-    while true do
-        task.wait(0.5)
-        if espEnabled then
-            for _, plr in pairs(Players:GetPlayers()) do
-                if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") and plr.Character:FindFirstChild("HumanoidRootPart") then
-                    local color = Color3.fromRGB(255, 0, 0)
-                    if checkItems(plr) then
-                        color = Color3.fromRGB(255, 255, 0)
-                    end
-                    updateESP(plr.Character, color)
-                end
-            end
-        end
-    end
+while true do
+task.wait(0.5)
+if espEnabled then
+for _, plr in pairs(Players:GetPlayers()) do
+if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") and plr.Character:FindFirstChild("HumanoidRootPart") then
+local color = Color3.fromRGB(255, 0, 0)
+if checkItems(plr) then
+color = Color3.fromRGB(255, 255, 0)
+end
+updateESP(plr.Character, color)
+end
+end
+end
+end
 end)
 
 FullbrightButton.MouseButton1Click:Connect(function()
-    fullbright = not fullbright
-    if fullbright then
-        FullbrightButton.Text = "Fullbright: ON"
-        FullbrightButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-        Lighting.Brightness = 2
-        Lighting.ClockTime = 14
-        Lighting.FogEnd = 100000
-        Lighting.GlobalShadows = false
-        Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-    else
-        FullbrightButton.Text = "Fullbright"
-        FullbrightButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        Lighting.Brightness = 1
-        Lighting.ClockTime = 12
-        Lighting.FogEnd = 10000
-        Lighting.GlobalShadows = true
-        Lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
-    end
+fullbright = not fullbright
+if fullbright then
+FullbrightButton.Text = "Fullbright: ON"
+FullbrightButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+Lighting.Brightness = 2
+Lighting.ClockTime = 14
+Lighting.FogEnd = 100000
+Lighting.GlobalShadows = false
+Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+else
+FullbrightButton.Text = "Fullbright"
+FullbrightButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Lighting.Brightness = 1
+Lighting.ClockTime = 12
+Lighting.FogEnd = 10000
+Lighting.GlobalShadows = true
+Lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
+end
 end)
 
 TPToolButton.MouseButton1Click:Connect(function()
-    tpToolActive = not tpToolActive
-    if tpToolActive then
-        TPToolButton.Text = "TP Tool: ON"
-        TPToolButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
-        tpToolInstance = Instance.new("Tool")
-        tpToolInstance.Name = "TP Tool"
-        tpToolInstance.RequiresHandle = false
-        tpToolInstance.Parent = LocalPlayer.Backpack
-        tpToolInstance.Activated:Connect(function()
-            local mouse = LocalPlayer:GetMouse()
-            if mouse and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 3, 0))
-            end
-        end)
-    else
-        TPToolButton.Text = "TP Tool"
-        TPToolButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        if tpToolInstance then
-            tpToolInstance:Destroy()
-            tpToolInstance = nil
-        end
-        local existingTool = LocalPlayer.Backpack:FindFirstChild("TP Tool")
-        if existingTool then existingTool:Destroy() end
-        if LocalPlayer.Character then
-            local heldTool = LocalPlayer.Character:FindFirstChild("TP Tool")
-            if heldTool then heldTool:Destroy() end
-        end
-    end
+tpToolActive = not tpToolActive
+if tpToolActive then
+TPToolButton.Text = "TP Tool: ON"
+TPToolButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+tpToolInstance = Instance.new("Tool")
+tpToolInstance.Name = "TP Tool"
+tpToolInstance.RequiresHandle = false
+tpToolInstance.Parent = LocalPlayer.Backpack
+tpToolInstance.Activated:Connect(function()
+local mouse = LocalPlayer:GetMouse()
+if mouse and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0, 3, 0))
+end
+end)
+else
+TPToolButton.Text = "TP Tool"
+TPToolButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+if tpToolInstance then
+tpToolInstance:Destroy()
+tpToolInstance = nil
+end
+local existingTool = LocalPlayer.Backpack:FindFirstChild("TP Tool")
+if existingTool then existingTool:Destroy() end
+if LocalPlayer.Character then
+local heldTool = LocalPlayer.Character:FindFirstChild("TP Tool")
+if heldTool then heldTool:Destroy() end
+end
+end
 end)
 
 SpawnButton.MouseButton1Click:Connect(function()
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1.57, 105.00, -22.51)
-    end
+if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1.57, 105.00, -22.51)
+end
 end)
 
 local spectateIndex = 1
@@ -588,222 +585,229 @@ local spectatingPlayers = {}
 local currentSpectateTarget = nil
 
 local function getSpectateTargets()
-    local targets = {}
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer then
-            table.insert(targets, p)
-        end
-    end
-    return targets
+local targets = {}
+for _, p in pairs(Players:GetPlayers()) do
+if p ~= LocalPlayer then
+table.insert(targets, p)
+end
+end
+return targets
 end
 
 local function updateSpectate()
-    spectatingPlayers = getSpectateTargets()
-    if #spectatingPlayers == 0 then
-        SpecName.Text = "No Players Found"
-        currentSpectateTarget = nil
-        Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
-        return
-    end
-    if spectateIndex > #spectatingPlayers then spectateIndex = 1 end
-    if spectateIndex < 1 then spectateIndex = #spectatingPlayers end
-    local target = spectatingPlayers[spectateIndex]
-    currentSpectateTarget = target
-    SpecName.Text = target.Name
-    if target.Character and target.Character:FindFirstChild("Humanoid") then
-        Camera.CameraSubject = target.Character.Humanoid
-    end
+spectatingPlayers = getSpectateTargets()
+if #spectatingPlayers == 0 then
+SpecName.Text = "No Players Found"
+currentSpectateTarget = nil
+Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+return
+end
+if spectateIndex > #spectatingPlayers then spectateIndex = 1 end
+if spectateIndex < 1 then spectateIndex = #spectatingPlayers end
+local target = spectatingPlayers[spectateIndex]
+currentSpectateTarget = target
+SpecName.Text = target.Name
+if target.Character and target.Character:FindFirstChild("Humanoid") then
+Camera.CameraSubject = target.Character.Humanoid
+end
 end
 
 SpectateMenuButton.MouseButton1Click:Connect(function()
-    SpectateFrame.Visible = not SpectateFrame.Visible
-    if SpectateFrame.Visible then
-        updateSpectate()
-    else
-        Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
-    end
+SpectateFrame.Visible = not SpectateFrame.Visible
+if SpectateFrame.Visible then
+updateSpectate()
+else
+Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+end
 end)
 
 SpecPrev.MouseButton1Click:Connect(function()
-    spectateIndex = spectateIndex - 1
-    updateSpectate()
+spectateIndex = spectateIndex - 1
+updateSpectate()
 end)
 
 SpecNext.MouseButton1Click:Connect(function()
-    spectateIndex = spectateIndex + 1
-    updateSpectate()
+spectateIndex = spectateIndex + 1
+updateSpectate()
 end)
 
 SpecExit.MouseButton1Click:Connect(function()
-    SpectateFrame.Visible = false
-    Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+SpectateFrame.Visible = false
+Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
 end)
 
 SpecHighlight.MouseButton1Click:Connect(function()
-    if currentSpectateTarget and currentSpectateTarget.Character and currentSpectateTarget.Character:FindFirstChild("Head") then
-        local head = currentSpectateTarget.Character.Head
-        local existing = head:FindFirstChild("HighlightedMarker")
-        if existing then
-            existing:Destroy()
-        else
-            local bb = Instance.new("BillboardGui")
-            bb.Name = "HighlightedMarker"
-            bb.Adornee = head
-            bb.Size = UDim2.new(0, 100, 0, 100)
-            bb.StudsOffset = Vector3.new(0, 2, 0)
-            bb.AlwaysOnTop = true
-            bb.Parent = head
-            local txt = Instance.new("TextLabel")
-            txt.Parent = bb
-            txt.Size = UDim2.new(1, 0, 1, 0)
-            txt.BackgroundTransparency = 1
-            txt.Text = "!"
-            txt.TextColor3 = Color3.fromRGB(255, 0, 0)
-            txt.TextScaled = true
-            txt.Font = Enum.Font.GothamBold
-            local stroke = Instance.new("UIStroke")
-            stroke.Parent = txt
-            stroke.Thickness = 2
-            stroke.TextStrokeTransparency = 0
-        end
-    end
+if currentSpectateTarget and currentSpectateTarget.Character and currentSpectateTarget.Character:FindFirstChild("Head") then
+local head = currentSpectateTarget.Character.Head
+local existing = head:FindFirstChild("HighlightedMarker")
+if existing then
+existing:Destroy()
+else
+local bb = Instance.new("BillboardGui")
+bb.Name = "HighlightedMarker"
+bb.Adornee = head
+bb.Size = UDim2.new(0, 100, 0, 100)
+bb.StudsOffset = Vector3.new(0, 2, 0)
+bb.AlwaysOnTop = true
+bb.Parent = head
+local txt = Instance.new("TextLabel")
+txt.Parent = bb
+txt.Size = UDim2.new(1, 0, 1, 0)
+txt.BackgroundTransparency = 1
+txt.Text = "!"
+txt.TextColor3 = Color3.fromRGB(255, 0, 0)
+txt.TextScaled = true
+txt.Font = Enum.Font.GothamBold
+local stroke = Instance.new("UIStroke")
+stroke.Parent = txt
+stroke.Thickness = 2
+stroke.TextStrokeTransparency = 0
+end
+end
 end)
 
 FPSBoostButton.MouseButton1Click:Connect(function()
-    local decals = workspace:GetDescendants()
-    for _, v in pairs(decals) do
-        if v:IsA("Decal") or v:IsA("Texture") then
-            v:Destroy()
-        elseif v:IsA("BasePart") then
-            v.Material = Enum.Material.SmoothPlastic
-            v.CastShadow = false
-            v.Reflectance = 0
-        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
-            v.Enabled = false
-        end
-    end
-    Lighting.GlobalShadows = false
-    Lighting.FogEnd = 9e9
-    FPSBoostButton.Text = "FPS Boosted!"
-    task.wait(1)
-    FPSBoostButton.Text = "FPS Boost"
+local decals = workspace:GetDescendants()
+for _, v in pairs(decals) do
+if v:IsA("Decal") or v:IsA("Texture") then
+v:Destroy()
+elseif v:IsA("BasePart") then
+v.Material = Enum.Material.SmoothPlastic
+v.CastShadow = false
+v.Reflectance = 0
+elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+v.Enabled = false
+end
+end
+Lighting.GlobalShadows = false
+Lighting.FogEnd = 9e9
+FPSBoostButton.Text = "FPS Boosted!"
+task.wait(1)
+FPSBoostButton.Text = "FPS Boost"
+end)
+
+WallhopButton.MouseButton1Click:Connect(function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/giobolqvi1/wallhop-by-GioBolqv1-fuck-spiderscripts-skidders/refs/heads/main/obfuscated_script-1769006346803.lua.txt"))()
+WallhopButton.Text = "Wallhop Loaded"
+wait(1)
+WallhopButton.Text = "wallhop cred to owner"
 end)
 
 RunService.RenderStepped:Connect(function()
-    local char = LocalPlayer.Character
-    if not char then return end
-    local root = char:FindFirstChild("HumanoidRootPart")
-    local hum = char:FindFirstChild("Humanoid")
-    if farming and not ritualActive and root then
-        local currentTime = tick()
-        local wiggle = math.sin(currentTime * 8) * 6
-        root.CFrame = CFrame.new(farmTarget.X + wiggle, farmTarget.Y, farmTarget.Z)
-        root.AssemblyLinearVelocity = Vector3.zero
-        root.AssemblyAngularVelocity = Vector3.zero
-    end
-    if ritualActive and root and hum then
-        root.Anchored = true
-        local elapsed = tick() - ritualStartTime
-        if elapsed >= 4.4 then
-            hum.Health = 0
-            ritualActive = false
-            RitualButton.Text = "Homer Ritual"
-            RitualButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        else
-            local rampUp = math.pow(elapsed / 4.4, 4)
-            local spinSpeed = 0.1 + (rampUp * 40)
-            local floatSpeed = 0.05 + (rampUp * 1.5)
-            root.CFrame = root.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0) + Vector3.new(0, floatSpeed, 0)
-        end
-    end
-    if annoyServer and root and hum then
-        if not annoyPlatform or not annoyPlatform.Parent then
-            annoyPlatform = Instance.new("Part")
-            annoyPlatform.Name = "AnnoyPlatform"
-            annoyPlatform.Size = Vector3.new(10, 1, 10)
-            annoyPlatform.Anchored = true
-            annoyPlatform.Transparency = 1
-            annoyPlatform.Parent = workspace
-        end
-        if tick() >= nextAnnoyTime then
-            nextAnnoyTime = tick() + 2
-            local players = Players:GetPlayers()
-            local validTargets = {}
-            for _, p in pairs(players) do
-                if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                    table.insert(validTargets, p)
-                end
-            end
-            if #validTargets > 0 then
-                currentAnnoyTarget = validTargets[math.random(1, #validTargets)]
-            else
-                currentAnnoyTarget = nil
-            end
-        end
-        if currentAnnoyTarget and currentAnnoyTarget.Character and currentAnnoyTarget.Character:FindFirstChild("HumanoidRootPart") then
-            local targetCF = currentAnnoyTarget.Character.HumanoidRootPart.CFrame
-            local myCF = targetCF * CFrame.new(0, 19, 0)
-            root.CFrame = myCF
-            root.AssemblyLinearVelocity = Vector3.zero
-            annoyPlatform.CFrame = myCF * CFrame.new(0, -3.5, 0)
-        end
-        local pizza = char:FindFirstChild("Pizza") or LocalPlayer.Backpack:FindFirstChild("Pizza")
-        if pizza then
-            if pizza.Parent == char then
-                pizza.Parent = LocalPlayer.Backpack
-            else
-                hum:EquipTool(pizza)
-            end
-        end
-    elseif not annoyServer and annoyPlatform then
-        annoyPlatform:Destroy()
-        annoyPlatform = nil
-    end
-    if pizzaSpamActive and hum then
-        local pizza = char:FindFirstChild("Pizza") or LocalPlayer.Backpack:FindFirstChild("Pizza")
-        if pizza then
-            if pizza.Parent == char then
-                pizza.Parent = LocalPlayer.Backpack
-            else
-                hum:EquipTool(pizza)
-            end
-        end
-    end
-    if platformActive and root then
-        if not myPlatform or not myPlatform.Parent then
-            myPlatform = Instance.new("Part")
-            myPlatform.Name = "WalkPlatform"
-            myPlatform.Size = Vector3.new(10, 1, 10)
-            myPlatform.Anchored = true
-            myPlatform.BrickColor = BrickColor.new("Dark stone grey")
-            myPlatform.Material = Enum.Material.Neon
-            myPlatform.Parent = workspace
-        end
-        myPlatform.CFrame = CFrame.new(root.Position.X, root.Position.Y - 3.5, root.Position.Z)
-    elseif not platformActive and myPlatform then
-        myPlatform:Destroy()
-        myPlatform = nil
-    end
+local char = LocalPlayer.Character
+if not char then return end
+local root = char:FindFirstChild("HumanoidRootPart")
+local hum = char:FindFirstChild("Humanoid")
+if farming and not ritualActive and root then
+local currentTime = tick()
+local wiggle = math.sin(currentTime * 8) * 6
+root.CFrame = CFrame.new(farmTarget.X + wiggle, farmTarget.Y, farmTarget.Z)
+root.AssemblyLinearVelocity = Vector3.zero
+root.AssemblyAngularVelocity = Vector3.zero
+end
+if ritualActive and root and hum then
+root.Anchored = true
+local elapsed = tick() - ritualStartTime
+if elapsed >= 4.4 then
+hum.Health = 0
+ritualActive = false
+RitualButton.Text = "Homer Ritual"
+RitualButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+else
+local rampUp = math.pow(elapsed / 4.4, 4)
+local spinSpeed = 0.1 + (rampUp * 40)
+local floatSpeed = 0.05 + (rampUp * 1.5)
+root.CFrame = root.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0) + Vector3.new(0, floatSpeed, 0)
+end
+end
+if annoyServer and root and hum then
+if not annoyPlatform or not annoyPlatform.Parent then
+annoyPlatform = Instance.new("Part")
+annoyPlatform.Name = "AnnoyPlatform"
+annoyPlatform.Size = Vector3.new(10, 1, 10)
+annoyPlatform.Anchored = true
+annoyPlatform.Transparency = 1
+annoyPlatform.Parent = workspace
+end
+if tick() >= nextAnnoyTime then
+nextAnnoyTime = tick() + 2
+local players = Players:GetPlayers()
+local validTargets = {}
+for _, p in pairs(players) do
+if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+table.insert(validTargets, p)
+end
+end
+if #validTargets > 0 then
+currentAnnoyTarget = validTargets[math.random(1, #validTargets)]
+else
+currentAnnoyTarget = nil
+end
+end
+if currentAnnoyTarget and currentAnnoyTarget.Character and currentAnnoyTarget.Character:FindFirstChild("HumanoidRootPart") then
+local targetCF = currentAnnoyTarget.Character.HumanoidRootPart.CFrame
+local myCF = targetCF * CFrame.new(0, 19, 0)
+root.CFrame = myCF
+root.AssemblyLinearVelocity = Vector3.zero
+annoyPlatform.CFrame = myCF * CFrame.new(0, -3.5, 0)
+end
+local pizza = char:FindFirstChild("Pizza") or LocalPlayer.Backpack:FindFirstChild("Pizza")
+if pizza then
+if pizza.Parent == char then
+pizza.Parent = LocalPlayer.Backpack
+else
+hum:EquipTool(pizza)
+end
+end
+elseif not annoyServer and annoyPlatform then
+annoyPlatform:Destroy()
+annoyPlatform = nil
+end
+if pizzaSpamActive and hum then
+local pizza = char:FindFirstChild("Pizza") or LocalPlayer.Backpack:FindFirstChild("Pizza")
+if pizza then
+if pizza.Parent == char then
+pizza.Parent = LocalPlayer.Backpack
+else
+hum:EquipTool(pizza)
+end
+end
+end
+if platformActive and root then
+if not myPlatform or not myPlatform.Parent then
+myPlatform = Instance.new("Part")
+myPlatform.Name = "WalkPlatform"
+myPlatform.Size = Vector3.new(10, 1, 10)
+myPlatform.Anchored = true
+myPlatform.BrickColor = BrickColor.new("Dark stone grey")
+myPlatform.Material = Enum.Material.Neon
+myPlatform.Parent = workspace
+end
+myPlatform.CFrame = CFrame.new(root.Position.X, root.Position.Y - 3.5, root.Position.Z)
+elseif not platformActive and myPlatform then
+myPlatform:Destroy()
+myPlatform = nil
+end
 end)
 
 LocalPlayer.Idled:Connect(function()
-    VirtualUser:CaptureController()
-    VirtualUser:ClickButton2(Vector2.new())
+VirtualUser:CaptureController()
+VirtualUser:ClickButton2(Vector2.new())
 end)
 
 task.spawn(function()
-    while true do
-        task.wait(600)
-        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.RightControl, false, game)
-        task.wait(0.1)
-        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.RightControl, false, game)
-    end
+while true do
+task.wait(600)
+VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.RightControl, false, game)
+task.wait(0.1)
+VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.RightControl, false, game)
+end
 end)
 
 task.spawn(function()
-    while true do
-        task.wait(300)
-        VirtualUser:CaptureController()
-        VirtualUser:ClickButton2(Vector2.new())
-    end
+while true do
+task.wait(300)
+VirtualUser:CaptureController()
+VirtualUser:ClickButton2(Vector2.new())
+end
 end)
