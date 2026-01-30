@@ -255,22 +255,22 @@ local LoadBlueBoxButton = createButton("Blue box")
 local WallhopButton = createButton("Wallhop")
 local TPMapButton = createButton("Goto Map")
 
-createLabel("--Farm--", 1)
+createLabel("Farm", 1)
 addRow({FarmButton, FarmWinsButton}, 2)
 
-createLabel("--Homer--", 10)
+createLabel("Homer", 10)
 addRow({KillAllButton}, 11)
 
-createLabel("--Troll--", 20)
+createLabel("Troll", 20)
 addRow({AnnoyButton, PizzaSpamButton}, 21)
 addRow({TacoSpamButton, RitualButton}, 22)
 addRow({UpsideDownButton}, 23)
 
-createLabel("--Visual--", 30)
+createLabel("Visual", 30)
 addRow({ESPButton, DotESPButton}, 31)
 addRow({FullbrightButton, SpectateMenuButton}, 32)
 
-createLabel("--Misc--", 40)
+createLabel("Misc", 40)
 addRow({PlatformButton, TPToolButton}, 41)
 addRow({SpawnButton, FPSBoostButton}, 42)
 addRow({LoadBlueBoxButton, WallhopButton}, 43)
@@ -403,8 +403,23 @@ FarmWinsButton.MouseButton1Click:Connect(function()
         FarmWinsButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
         task.spawn(function()
             while farmWins do
-                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(winTarget)
+                local char = LocalPlayer.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    local p = char:FindFirstChild("Pizza") or LocalPlayer.Backpack:FindFirstChild("Pizza")
+                    local t = char:FindFirstChild("Taco") or LocalPlayer.Backpack:FindFirstChild("Taco")
+                    if not p or not t then
+                        local origin = char.HumanoidRootPart.CFrame
+                        for _, pl in pairs(Players:GetPlayers()) do
+                            if not farmWins then break end
+                            if pl ~= LocalPlayer and pl.Character and pl.Character:FindFirstChild("HumanoidRootPart") then
+                                char.HumanoidRootPart.CFrame = pl.Character.HumanoidRootPart.CFrame
+                                task.wait(0.2)
+                            end
+                        end
+                        char.HumanoidRootPart.CFrame = origin
+                    else
+                        char.HumanoidRootPart.CFrame = CFrame.new(winTarget)
+                    end
                 end
                 task.wait(10)
             end
