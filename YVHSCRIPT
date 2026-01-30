@@ -179,6 +179,21 @@ SpecExit.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpecExit.TextSize = 12
 Instance.new("UICorner", SpecExit).CornerRadius = UDim.new(1, 0)
 
+local function createLabel(text, order)
+    local lbl = Instance.new("TextLabel")
+    lbl.Name = text .. "Label"
+    lbl.Parent = ContentFrame
+    lbl.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    lbl.Size = UDim2.new(0, 200, 0, 25)
+    lbl.Font = Enum.Font.GothamBlack
+    lbl.Text = text
+    lbl.TextColor3 = Color3.fromRGB(180, 180, 180)
+    lbl.TextSize = 14
+    lbl.LayoutOrder = order
+    Instance.new("UICorner", lbl).CornerRadius = UDim.new(0, 6)
+    return lbl
+end
+
 local function createButton(text, order)
     local btn = Instance.new("TextButton")
     local corner = Instance.new("UICorner")
@@ -197,23 +212,34 @@ local function createButton(text, order)
     return btn
 end
 
-local FarmButton = createButton("Farm Coins", 1)
-local FarmWinsButton = createButton("Auto Farm Wins", 2)
-local KillAllButton = createButton("Kill All Players", 3)
-local LoadBlueBoxButton = createButton("Load Blue Box Script", 4)
-local AnnoyButton = createButton("Annoy Server", 5)
-local PizzaSpamButton = createButton("Pizza Spam", 6)
-local RitualButton = createButton("Homer Ritual", 7)
-local PlatformButton = createButton("Platform", 8)
-local ESPButton = createButton("ESP (Box)", 9)
-local FullbrightButton = createButton("Fullbright", 10)
-local TPToolButton = createButton("TP Tool", 11)
-local SpawnButton = createButton("TP to Spawn", 12)
-local SpectateMenuButton = createButton("Spectate Menu", 13)
-local FPSBoostButton = createButton("FPS Boost", 14)
-local WallhopButton = createButton("wallhop cred to owner", 15)
-local UpsideDownButton = createButton("Upside Down", 16)
-local TacoSpamButton = createButton("Taco Spam", 17)
+createLabel("--- FARMING ---", 1)
+local FarmButton = createButton("Farm Coins", 2)
+local FarmWinsButton = createButton("Auto Farm Wins", 3)
+
+createLabel("--- COMBAT ---", 10)
+local KillAllButton = createButton("Kill All Players", 11)
+
+createLabel("--- TROLLING ---", 20)
+local AnnoyButton = createButton("Annoy Server", 21)
+local PizzaSpamButton = createButton("Pizza Spam", 22)
+local TacoSpamButton = createButton("Taco Spam", 23)
+local RitualButton = createButton("Homer Ritual", 24)
+local UpsideDownButton = createButton("Upside Down", 25)
+
+createLabel("--- VISUALS ---", 30)
+local ESPButton = createButton("ESP (Box)", 31)
+local DotESPButton = createButton("Dot ESP (Items)", 32)
+local FullbrightButton = createButton("Fullbright", 33)
+local SpectateMenuButton = createButton("Spectate Menu", 34)
+
+createLabel("--- MISC ---", 40)
+local PlatformButton = createButton("Platform", 41)
+local TPToolButton = createButton("TP Tool", 42)
+local SpawnButton = createButton("TP to Spawn", 43)
+local FPSBoostButton = createButton("FPS Boost", 44)
+local LoadBlueBoxButton = createButton("Load Blue Box Script", 45)
+local WallhopButton = createButton("wallhop cred to owner", 46)
+
 
 SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
     local text = SearchBar.Text:lower()
@@ -316,6 +342,7 @@ local ritualStartTime = 0
 local platformActive = false
 local myPlatform = nil
 local espEnabled = false
+local dotEspEnabled = false
 local pizzaSpamActive = false
 local fullbright = false
 local tpToolActive = false
@@ -356,7 +383,7 @@ end)
 KillAllButton.MouseButton1Click:Connect(function()
     killAllActive = not killAllActive
     if killAllActive then
-        KillAllButton.Text = "Killing Targets..."
+        KillAllButton.Text = "Killing All..."
         KillAllButton.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
         task.spawn(function()
             while killAllActive do
@@ -368,20 +395,14 @@ KillAllButton.MouseButton1Click:Connect(function()
                 for _, plr in pairs(potentialTargets) do
                     if not killAllActive then break end
                     if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("HumanoidRootPart") then
-                        local hasTaunt = false
-                        if plr.Backpack and (plr.Backpack:FindFirstChild("Taunt") or plr.Backpack:FindFirstChild("Taunt2")) then hasTaunt = true end
-                        if plr.Character and (plr.Character:FindFirstChild("Taunt") or plr.Character:FindFirstChild("Taunt2")) then hasTaunt = true end
-                        
-                        if hasTaunt then
-                            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                                LocalPlayer.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
-                                local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
-                                if tool then
-                                    tool.Parent = LocalPlayer.Character
-                                    tool:Activate()
-                                end
-                                task.wait(0.15)
+                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                            LocalPlayer.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
+                            local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool") or LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
+                            if tool then
+                                tool.Parent = LocalPlayer.Character
+                                tool:Activate()
                             end
+                            task.wait(0.15)
                         end
                     end
                 end
@@ -466,7 +487,7 @@ local function checkItems(plr)
     return hasPizza and hasTaco
 end
 
-local function updateESP(model, color)
+local function updateBoxESP(model, color)
     if not model or not model.Parent then return end
     local head = model:FindFirstChild("Head")
     if not head then return end
@@ -492,12 +513,39 @@ local function updateESP(model, color)
     end
 end
 
+local function updateDotESP(model, color)
+    if not model or not model.Parent then return end
+    local head = model:FindFirstChild("Head")
+    if not head then return end
+    local bb = head:FindFirstChild("YVH_DotESP")
+    if not bb then
+        bb = Instance.new("BillboardGui")
+        bb.Name = "YVH_DotESP"
+        bb.Adornee = head
+        bb.Size = UDim2.new(0, 15, 0, 15)
+        bb.AlwaysOnTop = true
+        bb.Parent = head
+        local dot = Instance.new("Frame")
+        dot.Size = UDim2.new(1, 0, 1, 0)
+        dot.BackgroundColor3 = color
+        dot.BorderSizePixel = 0
+        dot.Parent = bb
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(1, 0)
+        corner.Parent = dot
+    end
+    if bb and bb:FindFirstChild("Frame") then
+        bb.Frame.BackgroundColor3 = color
+    end
+end
+
 local function clearESP()
     for _, plr in pairs(Players:GetPlayers()) do
         if plr.Character then
             local head = plr.Character:FindFirstChild("Head")
-            if head and head:FindFirstChild("YVH_BoxESP") then
-                head.YVH_BoxESP:Destroy()
+            if head then
+                if head:FindFirstChild("YVH_BoxESP") then head.YVH_BoxESP:Destroy() end
+                if head:FindFirstChild("YVH_DotESP") then head.YVH_DotESP:Destroy() end
             end
         end
     end
@@ -505,12 +553,28 @@ end
 
 ESPButton.MouseButton1Click:Connect(function()
     espEnabled = not espEnabled
+    if espEnabled then dotEspEnabled = false DotESPButton.Text = "Dot ESP (Items)" DotESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50) end
+    
     if espEnabled then
-        ESPButton.Text = "ESP: ON"
+        ESPButton.Text = "Box ESP: ON"
         ESPButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
     else
         ESPButton.Text = "ESP (Box)"
         ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        clearESP()
+    end
+end)
+
+DotESPButton.MouseButton1Click:Connect(function()
+    dotEspEnabled = not dotEspEnabled
+    if dotEspEnabled then espEnabled = false ESPButton.Text = "ESP (Box)" ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50) end
+
+    if dotEspEnabled then
+        DotESPButton.Text = "Dot ESP: ON"
+        DotESPButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+    else
+        DotESPButton.Text = "Dot ESP (Items)"
+        DotESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         clearESP()
     end
 end)
@@ -520,12 +584,20 @@ task.spawn(function()
         task.wait(0.5)
         if espEnabled then
             for _, plr in pairs(Players:GetPlayers()) do
-                if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") and plr.Character:FindFirstChild("HumanoidRootPart") then
+                if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") then
+                    local color = Color3.fromRGB(255, 0, 0)
+                    if checkItems(plr) then color = Color3.fromRGB(255, 255, 0) end
+                    updateBoxESP(plr.Character, color)
+                end
+            end
+        elseif dotEspEnabled then
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Head") then
                     local color = Color3.fromRGB(255, 0, 0)
                     if checkItems(plr) then
                         color = Color3.fromRGB(255, 255, 0)
                     end
-                    updateESP(plr.Character, color)
+                    updateDotESP(plr.Character, color)
                 end
             end
         end
@@ -818,7 +890,7 @@ RunService.RenderStepped:Connect(function()
     if upsideDownActive and root then
         local currentPos = root.Position
         local _, yRot, _ = root.CFrame:ToOrientation()
-        root.CFrame = CFrame.new(currentPos) * CFrame.Angles(0, yRot, math.pi)
+        root.CFrame = CFrame.new(currentPos) * CFrame.Angles(0, yRot, math.pi) * CFrame.new(0, 2, 0)
     end
     if platformActive and root then
         if not myPlatform or not myPlatform.Parent then
