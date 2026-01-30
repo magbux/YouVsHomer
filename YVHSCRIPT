@@ -588,13 +588,13 @@ end
 
 ESPButton.MouseButton1Click:Connect(function()
     espEnabled = not espEnabled
-    if espEnabled then dotEspEnabled = false DotESPButton.Text = "Dot ESP (Items)" DotESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50) end
+    if espEnabled then dotEspEnabled = false DotESPButton.Text = "Dot ESP" DotESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50) end
     
     if espEnabled then
         ESPButton.Text = "Box ESP: ON"
         ESPButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
     else
-        ESPButton.Text = "ESP (Box)"
+        ESPButton.Text = "ESP"
         ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         clearESP()
     end
@@ -602,13 +602,13 @@ end)
 
 DotESPButton.MouseButton1Click:Connect(function()
     dotEspEnabled = not dotEspEnabled
-    if dotEspEnabled then espEnabled = false ESPButton.Text = "ESP (Box)" ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50) end
+    if dotEspEnabled then espEnabled = false ESPButton.Text = "ESP" ESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50) end
 
     if dotEspEnabled then
         DotESPButton.Text = "Dot ESP: ON"
         DotESPButton.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
     else
-        DotESPButton.Text = "Dot ESP (Items)"
+        DotESPButton.Text = "Dot ESP"
         DotESPButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         clearESP()
     end
@@ -676,7 +676,7 @@ TPToolButton.MouseButton1Click:Connect(function()
             end
         end)
     else
-        TPToolButton.Text = "TP Tool"
+        TPToolButton.Text = "Tptool"
         TPToolButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         if tpToolInstance then
             tpToolInstance:Destroy()
@@ -811,9 +811,9 @@ end)
 
 WallhopButton.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/giobolqvi1/wallhop-by-GioBolqv1-fuck-spiderscripts-skidders/refs/heads/main/obfuscated_script-1769006346803.lua.txt"))()
-    WallhopButton.Text = "Wallhop Loaded"
+    WallhopButton.Text = "Wallhop"
     wait(1)
-    WallhopButton.Text = "wallhop cred to owner"
+    WallhopButton.Text = "wallhop"
 end)
 
 UpsideDownButton.MouseButton1Click:Connect(function()
