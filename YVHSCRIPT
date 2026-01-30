@@ -194,61 +194,96 @@ local function createLabel(text, order)
     return lbl
 end
 
-local function createButton(text, order)
+local function createButton(text)
     local btn = Instance.new("TextButton")
     local corner = Instance.new("UICorner")
     btn.Name = text
-    btn.Parent = ContentFrame
     btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    btn.Size = UDim2.new(0, 200, 0, 35)
     btn.Font = Enum.Font.GothamBold
     btn.Text = text
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.TextSize = 14.000
     btn.AutoButtonColor = true
-    btn.LayoutOrder = order
     corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = btn
     return btn
 end
 
+local function addRow(buttons, order)
+    local row = Instance.new("Frame")
+    row.Name = "Row_" .. order
+    row.Parent = ContentFrame
+    row.BackgroundTransparency = 1
+    row.Size = UDim2.new(0, 200, 0, 35)
+    row.LayoutOrder = order
+    
+    local layout = Instance.new("UIListLayout")
+    layout.Parent = row
+    layout.FillDirection = Enum.FillDirection.Horizontal
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 6)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+    if #buttons == 1 then
+        buttons[1].Parent = row
+        buttons[1].Size = UDim2.new(1, 0, 1, 0)
+    elseif #buttons == 2 then
+        buttons[1].Parent = row
+        buttons[1].Size = UDim2.new(0.5, -3, 1, 0)
+        buttons[2].Parent = row
+        buttons[2].Size = UDim2.new(0.5, -3, 1, 0)
+    end
+end
+
+local FarmButton = createButton("Farm Coins")
+local FarmWinsButton = createButton("Auto Farm Wins")
+local KillAllButton = createButton("Kill All Players")
+local AnnoyButton = createButton("Annoy Server")
+local PizzaSpamButton = createButton("Pizza Spam")
+local TacoSpamButton = createButton("Taco Spam")
+local RitualButton = createButton("Homer Ritual")
+local UpsideDownButton = createButton("Upside Down")
+local ESPButton = createButton("ESP (Box)")
+local DotESPButton = createButton("Dot ESP (Items)")
+local FullbrightButton = createButton("Fullbright")
+local SpectateMenuButton = createButton("Spectate Menu")
+local PlatformButton = createButton("Platform")
+local TPToolButton = createButton("TP Tool")
+local SpawnButton = createButton("TP to Spawn")
+local FPSBoostButton = createButton("FPS Boost")
+local LoadBlueBoxButton = createButton("Load Blue Box")
+local WallhopButton = createButton("Wallhop")
+local TPMapButton = createButton("TP to Map")
+
 createLabel("--- FARMING ---", 1)
-local FarmButton = createButton("Farm Coins", 2)
-local FarmWinsButton = createButton("Auto Farm Wins", 3)
+addRow({FarmButton, FarmWinsButton}, 2)
 
 createLabel("--- COMBAT ---", 10)
-local KillAllButton = createButton("Kill All Players", 11)
+addRow({KillAllButton}, 11)
 
 createLabel("--- TROLLING ---", 20)
-local AnnoyButton = createButton("Annoy Server", 21)
-local PizzaSpamButton = createButton("Pizza Spam", 22)
-local TacoSpamButton = createButton("Taco Spam", 23)
-local RitualButton = createButton("Homer Ritual", 24)
-local UpsideDownButton = createButton("Upside Down", 25)
+addRow({AnnoyButton, PizzaSpamButton}, 21)
+addRow({TacoSpamButton, RitualButton}, 22)
+addRow({UpsideDownButton}, 23)
 
 createLabel("--- VISUALS ---", 30)
-local ESPButton = createButton("ESP (Box)", 31)
-local DotESPButton = createButton("Dot ESP (Items)", 32)
-local FullbrightButton = createButton("Fullbright", 33)
-local SpectateMenuButton = createButton("Spectate Menu", 34)
+addRow({ESPButton, DotESPButton}, 31)
+addRow({FullbrightButton, SpectateMenuButton}, 32)
 
 createLabel("--- MISC ---", 40)
-local PlatformButton = createButton("Platform", 41)
-local TPToolButton = createButton("TP Tool", 42)
-local SpawnButton = createButton("TP to Spawn", 43)
-local FPSBoostButton = createButton("FPS Boost", 44)
-local LoadBlueBoxButton = createButton("Load Blue Box Script", 45)
-local WallhopButton = createButton("wallhop cred to owner", 46)
-
+addRow({PlatformButton, TPToolButton}, 41)
+addRow({SpawnButton, FPSBoostButton}, 42)
+addRow({LoadBlueBoxButton, WallhopButton}, 43)
+addRow({TPMapButton}, 44)
 
 SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
     local text = SearchBar.Text:lower()
-    for _, child in pairs(ContentFrame:GetChildren()) do
-        if child:IsA("GuiObject") then
-            if child.Name:lower():find(text) then
-                child.Visible = true
+    for _, desc in pairs(ContentFrame:GetDescendants()) do
+        if desc:IsA("TextButton") then
+            if desc.Name:lower():find(text) then
+                desc.Visible = true
             else
-                child.Visible = false
+                desc.Visible = false
             end
         end
     end
@@ -420,7 +455,7 @@ LoadBlueBoxButton.MouseButton1Click:Connect(function()
     LoadBlueBoxButton.Text = "Loaded!"
     loadstring(game:HttpGet(scriptUrl))()
     wait(1)
-    LoadBlueBoxButton.Text = "Load Blue Box Script"
+    LoadBlueBoxButton.Text = "Load Blue Box"
 end)
 
 AnnoyButton.MouseButton1Click:Connect(function()
@@ -662,6 +697,12 @@ SpawnButton.MouseButton1Click:Connect(function()
     end
 end)
 
+TPMapButton.MouseButton1Click:Connect(function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(41.10, -78.31, -54.05)
+    end
+end)
+
 local spectateIndex = 1
 local spectatingPlayers = {}
 local currentSpectateTarget = nil
@@ -890,7 +931,7 @@ RunService.RenderStepped:Connect(function()
     if upsideDownActive and root then
         local currentPos = root.Position
         local _, yRot, _ = root.CFrame:ToOrientation()
-        root.CFrame = CFrame.new(currentPos) * CFrame.Angles(0, yRot, math.pi) * CFrame.new(0, 2, 0)
+        root.CFrame = CFrame.new(currentPos) * CFrame.Angles(0, yRot, math.pi)
     end
     if platformActive and root then
         if not myPlatform or not myPlatform.Parent then
