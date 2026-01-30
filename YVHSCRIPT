@@ -11,7 +11,7 @@ local Camera = workspace.CurrentCamera
 pcall(function()
     StarterGui:SetCore("SendNotification", {
         Title = "Notice";
-        Text = "use script with blue box if it doesnt load ur executor is weak";
+        Text = "use script with blue box for unlocking skins and homer chances";
         Duration = 10;
     })
 end)
