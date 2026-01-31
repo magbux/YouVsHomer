@@ -6,13 +6,39 @@ local StarterGui = game:GetService("StarterGui")
 local VirtualUser = game:GetService("VirtualUser")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
+
+local Blacklist = {
+    "toile_tananasnasdas", "deerxsx", "noonieloafer", "jzzf", "AGElSPOLlS", 
+    "2fartedd", "fancycmoneyfreshman0", "Matute44523", "Agust3K", "casyyalo3", 
+    "qwertyuiopasdfghjklzxcvbnmdyhdthgduhgdyhgcgi", "YOUSMELLHORRID", "CptDev_5", 
+    "sstymkiwi", "msgYamada", "arcadius0322", "nervepaws", "sssommnn12", 
+    "Frela1238", "cloneRemover", "Vanixic1", "bucketofmice", "Landohns", 
+    "0YDEU", "PizzaGovan", "Chumbeg", "6492Z", "cnotma", "iwannagohome673", 
+    "arppi213456", "ZixorHD", "SparkTehDog", "y0utrynot", "EnkJuice", 
+    "Judelinc", "Fruitbytheleg"
+}
+
+local function CheckBlacklist(p)
+    for _, name in pairs(Blacklist) do
+        if p.Name == name then
+            LocalPlayer:Kick("Blacklisted Player Joined")
+        end
+    end
+end
+
+Players.PlayerAdded:Connect(CheckBlacklist)
+for _, p in pairs(Players:GetPlayers()) do
+    CheckBlacklist(p)
+end
 
 pcall(function()
     StarterGui:SetCore("SendNotification", {
         Title = "Loaded",
-        Text = "Modern UI Active",
+        Text = "use blue box for homer chances and skins",
         Duration = 5,
     })
 end)
@@ -275,12 +301,19 @@ local FPSBoostButton = createButton("FPS Boost")
 local LoadBlueBoxButton = createButton("Blue Box")
 local WallhopButton = createButton("Wallhop")
 local TPMapButton = createButton("Goto Map")
+local InfJumpButton = createButton("Inf Jump")
+local ServerHopButton = createButton("Server Hop")
+local RejoinButton = createButton("Rejoin")
+local TPHomerButton = createButton("TP Homer")
+local SpectateHomerButton = createButton("Spec Homer")
+local FindNoItemButton = createButton("TP No Items")
 
 createLabel("Farming", 1)
 addRow({FarmButton, FarmWinsButton}, 2)
 
 createLabel("Homer", 10)
 addRow({KillAllButton}, 11)
+addRow({TPHomerButton, SpectateHomerButton}, 12)
 
 createLabel("Trolling", 20)
 addRow({AnnoyButton, PizzaSpamButton}, 21)
@@ -295,7 +328,9 @@ createLabel("Misc", 40)
 addRow({PlatformButton, TPToolButton}, 41)
 addRow({SpawnButton, FPSBoostButton}, 42)
 addRow({LoadBlueBoxButton, WallhopButton}, 43)
-addRow({TPMapButton}, 44)
+addRow({TPMapButton, FindNoItemButton}, 44)
+addRow({InfJumpButton, RejoinButton}, 45)
+addRow({ServerHopButton}, 46)
 
 SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
     local text = SearchBar.Text:lower()
@@ -381,6 +416,8 @@ local tpToolActive = false
 local tpToolInstance = nil
 local upsideDownActive = false
 local tacoSpamActive = false
+local infJumpActive = false
+local spectateHomerActive = false
 
 local function toggleColor(btn, active)
     if active then
@@ -816,6 +853,69 @@ TacoSpamButton.MouseButton1Click:Connect(function()
     tacoSpamActive = not tacoSpamActive
     toggleColor(TacoSpamButton, tacoSpamActive)
     TacoSpamButton.Text = tacoSpamActive and "Spamming..." or "Taco Spam"
+end)
+
+InfJumpButton.MouseButton1Click:Connect(function()
+    infJumpActive = not infJumpActive
+    toggleColor(InfJumpButton, infJumpActive)
+    InfJumpButton.Text = infJumpActive and "Inf Jump: ON" or "Inf Jump"
+end)
+
+UserInputService.JumpRequest:Connect(function()
+    if infJumpActive and LocalPlayer.Character then
+        local human = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if human then
+            human:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+RejoinButton.MouseButton1Click:Connect(function()
+    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+end)
+
+ServerHopButton.MouseButton1Click:Connect(function()
+    local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100"))
+    for _, server in pairs(servers.data) do
+        if server.playing ~= server.maxPlayers and server.id ~= game.JobId then
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, LocalPlayer)
+            break
+        end
+    end
+end)
+
+TPHomerButton.MouseButton1Click:Connect(function()
+    local homer = workspace:FindFirstChild("Homer") or workspace:FindFirstChild("HomerNPC")
+    if homer and homer:FindFirstChild("Head") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = homer.Head.CFrame
+    end
+end)
+
+SpectateHomerButton.MouseButton1Click:Connect(function()
+    spectateHomerActive = not spectateHomerActive
+    toggleColor(SpectateHomerButton, spectateHomerActive)
+    SpectateHomerButton.Text = spectateHomerActive and "Spectating Homer" or "Spec Homer"
+    if spectateHomerActive then
+        local homer = workspace:FindFirstChild("Homer") or workspace:FindFirstChild("HomerNPC")
+        if homer and homer:FindFirstChild("Humanoid") then
+            Camera.CameraSubject = homer.Humanoid
+        end
+    else
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            Camera.CameraSubject = LocalPlayer.Character.Humanoid
+        end
+    end
+end)
+
+FindNoItemButton.MouseButton1Click:Connect(function()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            if not checkItems(p) then
+                LocalPlayer.Character.HumanoidRootPart.CFrame = p.Character.HumanoidRootPart.CFrame
+                break
+            end
+        end
+    end
 end)
 
 RunService.RenderStepped:Connect(function()
